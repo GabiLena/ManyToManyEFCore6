@@ -8,9 +8,7 @@ namespace DesafioWeDecode.Profiles
     {
         public PacienteProfile()
         {
-            CreateMap<CreatePacienteDTO, Paciente>();
-            CreateMap<UpdatePacienteDTO, Paciente>();
-            CreateMap<ReadPacienteDTO, Paciente>();
+            CreateMap<PacienteDTO, Paciente>();
         }
     }
 }

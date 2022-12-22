@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DesafioWeDecode.Data.PacienteDTO
 {
-    public class CreatePacienteDTO
+    public class PacienteDTO
     {
 
         [Required(ErrorMessage = "O nome do Paciente é obrigatório.")]

@@ -2,8 +2,10 @@
 
 namespace DesafioWeDecode.Data.MedicamentoDTO
 {
-    public class UpdateMedicamentoDTO
+    public class MedicamentoDTO
     {
+        public int? Id { get; set; }
+
         [Required(ErrorMessage = "O tipo Do Medicamento é obrigatório.")]
         [MaxLength(30, ErrorMessage = "O tipo de Medicamento não pode exceder 30 caracteres.")]
         public string Tipo { get; set; } //liquido, comprimido

@@ -20,9 +20,9 @@ namespace DesafioWeDecode.Controllers
         }
 
         [HttpPost]//FUNCIONA
-        public async Task<IActionResult> AdicionaMedicamento([FromBody] CreateMedicamentoDTO medicamentoDto) //ADICIONA 
+        public async Task<IActionResult> AdicionaMedicamento([FromBody] MedicamentoDTO medicamentoDto) //ADICIONA 
         {
-            var foiAdicionado = await _service.AdicionaMedicamentoAsync(medicamentoDto);
+            var foiAdicionado = await _service.AdicionaMedicamentoAsync(medicamentoDto);//pq esse é async e o debaixo não?
             if (foiAdicionado)
                 return Ok("Medicamento adicionado com sucesso");
 
@@ -42,24 +42,23 @@ namespace DesafioWeDecode.Controllers
             return Ok(medicamentos);
         }
 
-        //[HttpGet("{id}")]//FUNCIONA
-        //public IActionResult RecuperaMedicacaoPorId(int id) //READ POR ID
-        //{
-        //    var medicamento = _context.Medicamentos
-        //        .FirstOrDefault(m => m.Id == id);
-        //    if (medicamento == null) return NotFound();
-        //    return Ok(medicamento);
-        //}
+        [HttpGet("{id}")]//FUNCIONA
+        public IActionResult RecuperaMedicacaoPorId(int id) //READ POR ID
+        {
+            var medicamento = _service.RecuperaMedicamentoPorId(id);
+            if (medicamento == null) return NotFound();
+            return Ok(medicamento);
+        }
 
-        //[HttpPut("{id}")]//FUNCIONA
-        //public IActionResult AtualizaFilme(int id, [FromBody] UpdateMedicamentoDTO medicamentoDto)
-        //{
-        //    var medicamento = _context.Medicamentos.FirstOrDefault(m => m.Id == id);
-        //    if (medicamento == null) return NotFound();
-        //    _mapper.Map(medicamentoDto, medicamento);
-        //    _context.SaveChanges();
-        //    return NoContent();
-        //}
+        [HttpPut("{id}")]//FUNCIONA
+        public async Task<IActionResult> AtualizaFilme(int id, [FromBody] MedicamentoDTO medicamentoDto)
+        {
+            var medicamentoFoiAtualizado = await _service.AtualizaMedicamentoAsync(id, medicamentoDto);
+            if (!medicamentoFoiAtualizado)
+                return NotFound();
+
+            return Ok();
+        }
 
     }
 }

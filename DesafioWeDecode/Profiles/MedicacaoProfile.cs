@@ -8,8 +8,7 @@ namespace DesafioWeDecode.Profiles
     {
         public MedicacaoProfile()
         {
-            CreateMap<CreateMedicamentoDTO, Medicamento>();
-            CreateMap<UpdateMedicamentoDTO, Medicamento>();
+            CreateMap<MedicamentoDTO, Medicamento>();
         }
     }
 }
