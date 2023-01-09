@@ -13,45 +13,100 @@ namespace DesafioWeDecode.Controllers
     [Route("[controller]")]
     public class PacienteController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IPacienteService _service;
         private readonly IMedicamentoService _medicamentoService;
 
-        public PacienteController(IPacienteService service, IMedicamentoService medicamentoService)
+        public PacienteController(IPacienteService service, IMedicamentoService medicamentoService, IMapper mapper)
         {
             _service = service;
             _medicamentoService = medicamentoService;
+            _mapper = mapper;
         }
 
+        /// <summary>
+        /// Adiciona um paciente no banco de dados
+        /// </summary>
+        /// <param name="pacienteDto">Objeto com os campos necessários para a criação de um paciente</param>
+        /// <returns>ActionResult</returns>
         [HttpPost]
-        public IActionResult AdicionaPaciente([FromBody] PacienteDTO pacienteDto)//FUNCIONA
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> AdicionaPaciente([FromBody] PacienteDTO pacienteDto)
         {
-            _service.AdicionaPacienteAsync(pacienteDto);
-            return Ok(pacienteDto); //CreatedAtAction(nameof(RecuperaPacientePorId),
-                                    //new { id = paciente.Id }, paciente);// entender melhor o pq deste retorno 
+            await _service.AdicionaPacienteAsync(pacienteDto);
+            if (pacienteDto is null)
+            {
+                return BadRequest("Paciente não foi adicionado.");
+            }
+                return Ok(pacienteDto); //CreatedAtAction(nameof(RecuperaPacientePorId),
+                        //new { id = paciente.Id }, paciente);// entender melhor o pq deste retorno 
         }
 
-        [HttpGet("{id}")]
-        public IActionResult RecuperaPacientePorId(int id)
+        /// <summary>
+        /// Recupera pacientes
+        /// </summary>
+        /// <param name="skip">Método de paginação que pula 0 itens</param>
+        /// <param name="take">Método de paginação que lê quantidade de itens informada</param>
+        /// <returns>IActionResult</returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> RecuperaPacientes(int skip, int take)
         {
-            Paciente paciente = _service.RecuperaPacientePorId(id);
-            if (paciente == null) return NotFound();
-            return Ok(paciente);
-        }//FUNCIONA
+            var pacientes = await _service.RecuperaPacientes(skip, take);
+            if (pacientes is null)
+                return StatusCode(500, "Lista é nula");
 
-        //RECUPERA TODOS OS PACIENTES
+            if (!pacientes.Any())
+                return NotFound();
 
+            List<ReadPacienteDTO> pacienteDTOs = new();
+            for (int i = 0; i < pacientes.Count; i++)
+            {
+                var pacienteDto = _mapper.Map<ReadPacienteDTO>(pacientes[i]);
+                pacienteDTOs.Add(pacienteDto);
+            }
+
+            return Ok(pacienteDTOs);
+        }
+
+        /// <summary>
+        /// Recupera paciente por id
+        /// </summary>
+        /// <param name="id">para identificar paciente pelo Id</param>
+        /// <returns>ActionResult</returns>
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<ReadPacienteDTO> RecuperaPacientePorId(int id)
+        {
+            var paciente = _service.RecuperaPacientePorId(id);
+            if (paciente is null)
+            {
+                return NotFound();
+            }
+            var pacienteDto = _mapper.Map<ReadPacienteDTO>(paciente);
+            return Ok(pacienteDto);
+        }
+
+        /// <summary>
+        /// Adiciona medicamentos em paciente
+        /// </summary>
+        /// <param name="pacienteId">Recupera paciente a ser adicionado medicamentos</param>
+        /// <param name="medicamentos">Lista de medicamentos a ser adicionado em paciente</param>
+        /// <returns>IActionResult</returns>
         [HttpPost("{pacienteId}")]
-        public async Task<IActionResult> AdicionaMedicamentosNoPaciente(int pacienteId, [FromBody] IEnumerable<MedicamentoDTO> medicamentos)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> AdicionaMedicamentosNoPaciente(int pacienteId, [FromBody] List<MedicamentoDTO> medicamentos)//FUNCIONA
         {
             var paciente = _service.RecuperaPacientePorId(pacienteId);
             if (paciente is null)
                 return NotFound();
 
-            if (medicamentos.Any())
+            if (!medicamentos.Any())
                 return BadRequest();
 
             List<int> idsValidos = new();
             List<int> idsInvalidos = new();
+            //adicionar validação para ver se já existe medicamento no paciente
 
             foreach (var medicamento in medicamentos)
             {
@@ -73,11 +128,11 @@ namespace DesafioWeDecode.Controllers
                 return Ok();
             }
 
-            else 
+            else
             {
-                return NotFound(new { mensagem = "Alguns medicamentos não foram encontrados", idsInvalidos });
+                return NotFound(new { mensagem = "Estes medicamentos não foram encontrados: ", idsInvalidos });
             }
-            
+
         }
     }
 }

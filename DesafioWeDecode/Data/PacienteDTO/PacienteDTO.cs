@@ -5,6 +5,7 @@ namespace DesafioWeDecode.Data.PacienteDTO
 {
     public class PacienteDTO
     {
+        public int? Id { get; set; }
 
         [Required(ErrorMessage = "O nome do Paciente é obrigatório.")]
         [MaxLength(30, ErrorMessage = "O nome não pode exceder 30 caracteres.")]
@@ -16,6 +17,6 @@ namespace DesafioWeDecode.Data.PacienteDTO
 
         [Range(1, 120, ErrorMessage = "a Idade não pode exceder 120 anos.")]
         public int Idade { get; set; }
-        public List<Medicamento>? MedicamentoUtilizado { get; set; }
+        public List<MedicamentoDTO.MedicamentoDTO>? MedicamentoUtilizado { get; set; }
     }
 }

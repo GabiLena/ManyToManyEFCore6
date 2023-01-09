@@ -20,6 +20,6 @@ namespace DesafioWeDecode.Model
         public int Idade { get; set; }
 
 
-        public ICollection<PacienteMedicamento> PacienteMedicamentos { get; set; }
+        public List<PacienteMedicamento> PacienteMedicamentos { get; set; } = new();
     }
 }

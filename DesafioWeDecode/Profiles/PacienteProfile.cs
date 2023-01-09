@@ -9,6 +9,9 @@ namespace DesafioWeDecode.Profiles
         public PacienteProfile()
         {
             CreateMap<PacienteDTO, Paciente>();
+            CreateMap<Paciente, ReadPacienteDTO>()
+                .ForMember(dest => dest.Medicamentos,
+                m => m.MapFrom(src => src.PacienteMedicamentos.Select(pm => pm.Medicamento.Nome)));
         }
     }
 }
