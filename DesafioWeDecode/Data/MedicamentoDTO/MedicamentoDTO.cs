@@ -20,5 +20,7 @@ namespace DesafioWeDecode.Data.MedicamentoDTO
 
         [Range(1, 90, ErrorMessage = "O Mg deve ser até 90.")]
         public int Mg { get; set; }
+        public List<string>? Pacientes { get; set; } = new();
+
     }
 }

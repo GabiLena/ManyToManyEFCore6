@@ -1,6 +1,7 @@
 using DesafioWeDecode.Data;
 using DesafioWeDecode.Services;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,9 +12,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                  options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddControllers()
-                .AddJsonOptions(opt => { 
-                    opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles; //config para problema de loop, tipo json ignore
-                });
+    .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+                
 
 builder.Services.AddScoped<IMedicamentoService, MedicamentoService>();
 builder.Services.AddScoped<IPacienteService, PacienteService>();

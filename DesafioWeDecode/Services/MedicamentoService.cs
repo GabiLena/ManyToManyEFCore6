@@ -21,10 +21,14 @@ namespace DesafioWeDecode.Services
         {
             var medicamento = _mapper.Map<Medicamento>(medicamentoDto);
             await _context.Medicamentos.AddAsync(medicamento);
-            return await _context.SaveChangesAsync() > 0;// save changes retorna um int de entidades modificadas, se for maior que zero significa que foi modificada
+            return await _context.SaveChangesAsync() > 0;
         }
-
-        public IEnumerable<Medicamento> SelecionaMedicamentos(int skip, int take) => _context.Medicamentos.Skip(skip).Take(take);
+        public async Task<List<Medicamento>> RecuperaMedicamentosAsync()
+        {
+            return await _context.Medicamentos
+           .Include(p => p.PacienteMedicamentos)
+           .ThenInclude(pm => pm.Paciente).ToListAsync();
+        }
         public Medicamento RecuperaMedicamentoPorId(int id)
         {
             var medicamento = _context.Medicamentos
@@ -51,17 +55,18 @@ namespace DesafioWeDecode.Services
             _context.Medicamentos.Update(medicamento);
             await _context.SaveChangesAsync();
         }
+        public IEnumerable<int> ObterMedicamentosNovos(List<int> medicamentoIds, Paciente? paciente) => medicamentoIds.Where(medicamentoId => !paciente.PacienteMedicamentos.Any(pm => medicamentoId == pm.MedicamentoId));
+
     }
 
     public interface IMedicamentoService
     {
         Task<bool> AdicionaMedicamentoAsync(MedicamentoDTO medicamentoDto);
-        IEnumerable<Medicamento> SelecionaMedicamentos(int skip, int take);
+        Task<List<Medicamento>> RecuperaMedicamentosAsync();
         Medicamento RecuperaMedicamentoPorId(int id);
         Task<bool> AtualizaMedicamentoAsync(int id, UpdateMedicamentoDTO medicamentoDto);
         Task<bool> MedicamentoExisteAsync(int id);
         Task AdicionaPacienteAMedicamentoAsync(int idPaciente, int idMedicamento);
+        IEnumerable<int> ObterMedicamentosNovos(List<int> medicamentoIds, Paciente? paciente);
     }
-
-
 }
