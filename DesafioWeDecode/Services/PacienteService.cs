@@ -72,7 +72,7 @@ namespace DesafioWeDecode.Services
         Task<bool> AdicionaPacienteAsync(PacienteDTO pacienteDto);
         Task<bool> PacienteExisteAsync(int id);
         Task<List<Paciente>> RecuperaPacientes();
-        Paciente? RecuperaPacientePorIdEIncluiListaMedicações(int id);
+        Task<Paciente?> RecuperaPacientePorIdEIncluiListaMedicações(int id);
         Task<bool> PossuiMedicamentoAsync(int idPaciente, int medicamentoId);
         Task AdicionaMedicamentoAoPacienteAsync(int id, int medicamentoId);
         IEnumerable<int> ObterPacientesNovos(List<int> pacienteIds, Medicamento? medicamento);
